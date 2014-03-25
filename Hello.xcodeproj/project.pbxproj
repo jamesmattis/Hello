@@ -72,11 +72,11 @@
 		C018719918E2019400D43F66 /* PebbleKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleKit.framework; sourceTree = "<group>"; };
 		C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+Queue.m"; sourceTree = "<group>"; };
 		C01871B118E2044E00D43F66 /* NSMutableArray+Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+Queue.h"; sourceTree = "<group>"; };
-		C0EA986E18E2059100D1DE61 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = Readme/README.md; sourceTree = "<group>"; };
 		C0EA986F18E2059D00D1DE61 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Images/Default.png; sourceTree = "<group>"; };
 		C0EA987018E2059D00D1DE61 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Images/Icon.png; sourceTree = "<group>"; };
 		C0EA987418E2078D00D1DE61 /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = appinfo.json; path = HelloWatchApp/appinfo.json; sourceTree = SOURCE_ROOT; };
 		C0EA987518E2079300D1DE61 /* HelloWatchApp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = HelloWatchApp.c; path = HelloWatchApp/src/HelloWatchApp.c; sourceTree = SOURCE_ROOT; };
+		C0EA987618E20B3500D1DE61 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,9 +169,9 @@
 		C018715D18E1FF8900D43F66 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C0EA987618E20B3500D1DE61 /* README.md */,
 				C0EA986F18E2059D00D1DE61 /* Default.png */,
 				C0EA987018E2059D00D1DE61 /* Icon.png */,
-				C0EA986E18E2059100D1DE61 /* README.md */,
 				C018715E18E1FF8900D43F66 /* Hello-Info.plist */,
 				C018715F18E1FF8900D43F66 /* InfoPlist.strings */,
 				C018716218E1FF8900D43F66 /* main.m */,
