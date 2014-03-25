@@ -89,7 +89,7 @@ dispatch_barrier_sync(queue, ^{
 
 - When PebbleKit AppMessage pushMessage returns an error, the message has not been successfully sent to the watch. When 'Use Queue' is set to yes, it will attempt to resend the previous dictionary.
 
-- PebbleKit in general handles errors well. After some errors (particularly a series of Code 10 Timeout errors) PebbleKit will automatically reset itself. However, it doesn't seem to always reset itself as quickly as I would like. So, I manually reset the pebble session on each error in this exmaple. A reset simply calls closeSession followed by openSession. Most of the appMessage method automatically call openSession when they are called if the session isn't open. This exmaple calls closeSession on each error, and then attempts to push an update from the closeSession callback block:
+- PebbleKit in general handles errors well. After some errors (particularly a series of Code 10 Timeout errors) PebbleKit will automatically reset itself. However, it doesn't seem to always reset itself as quickly as I would like. So, I manually reset the pebble session on each error in this exmaple. A reset simply calls closeSession followed by openSession. Most of the appMessage method automatically call openSession when they are called if the session isn't open. This example calls closeSession on each error, and then attempts to push an update from the closeSession callback block:
 
 ```Objective-C
 [strongSelf.watch closeSession:^{
@@ -102,13 +102,13 @@ dispatch_barrier_sync(queue, ^{
 
 - Press any of the 'hello' buttons to start or stop a test. During the test, the app steps through the possible 'hello' strings and enqueues a new text string after a random delay. The Reduced Sniff switch toggles the Pebble Watch App sniff interval between normal and reduced mode. When Use Max Data rate is set to YES, the dictionary pushed to the Pebble watch is padded with zeroed NSData to the max dictionary size of 124 bytes. Use Queue toggles the use of a queue of dictionaries, or one single dictionary that is rewritten every time new data becomes available from the PebbleTest method. When the queue is used, you are insured that each dictionary you are trying to pass to the watch will get successfully sent and ACK'd. However, if you set a data rate faster than the watch can handle, it possible that your queue will start to fill and backup. There are situations where you don't necessarily need to have every message get successfully sent to the watch, and you might want to avoid the possibility of having the queue fill and backup. In that case, set Use Queue to no.
 
-- The level of the random delay can be set using the #defines at the top of the ViewController.m file. The purpose of the random delay is to simulate the approximate time between CLLocationManager GPS location updates. By adjusting these values, you can find the max data rate that you can effectively send messages to the watch without filling up the queue and design your app accordingly.
+- The level of the random delay can be set using the #defines at the top of the ViewController.m file. The purpose of the random delay is to simulate the approximate time between CLLocationManager GPS location updates. By adjusting these values, you can find the max data rate that you can effectively send messages to the watch without filling up the queue and design your app accordingly. Setting the range to 0.0 will turn off the random part of the delay and simply dispatch message on the constant average time.
 
 ##The Logged Stats
 
 - Run time is the total test run time.
 - Number of pushes counts the total number of times that pushPebbleUpdate has been called. Successful pushes counts the number of times the queue wasn't blocked because it had yet to respond from the previous push.
-- Pushed bytes gives the total bytes pushed, and the rate at which bytes have been pushed. The max rate is typically between 0.7-0.8 kB/s.
+- Pushed bytes gives the total bytes pushed, and the rate at which bytes have been pushed. The max rate is typically between 2.4-2.8 kB/s. This corresponds to 20-25 pushes per second, or 0.05-0.04 seconds between pushes. At fewer than 20 pushes per second, the queue typically doesn't fill. Above that, it will fill.
 - Received messages are the number of messages sent from the watch to the phone.
 - Block pushes are the number of pushPebbleUpdate attempts that could not be sent because appMessage had yet to respond from a previous push.
 - Blocked bytes are the total bytes that couldn't be pushed, including rate.
@@ -117,9 +117,20 @@ dispatch_barrier_sync(queue, ^{
 
 ##About the Code
 
-The code is split into general methods required for any app message implementation, and specific methods just for this demo app.
+- The code is split into a singleton PebbleController class that handles almost all of the interaction with the Pebble. To start the PebbleControler simply call:
 
-The code also has a bunch of pebble watch BOOL properties that aren't necessary in a production app, but are helpful in understanding the source and nature of various errors. Really, you just need on 'okToPushUpdate' BOOL that is set to YES whenever the appMessage system is setup, open, and has successfully returned the completion block from the previous push.
+```Objective-C
+[[PebbleController pebble] setDelegate:self];
+[[PebbleController pebble] enablePebbleHardware];
+```
+
+Dictionaries to push via App Message can then be queue using:
+
+```Objective-C
+[[PebbleController pebble] addDictionaryToQueue:dictionary];
+```
+
+- The PebbleController class has a bunch of pebble watch BOOL properties that aren't necessary in a production app, but are helpful in understanding the source and nature of various errors. Really, you just need on 'okToPushUpdate' BOOL that is set to YES whenever the appMessage system is setup, open, and has successfully returned the completion block from the previous push. There is also a lot of additional logging that isn't required in production.
 
 #License
 

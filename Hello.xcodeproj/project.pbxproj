@@ -30,6 +30,7 @@
 		C018719818E2018D00D43F66 /* PebbleVendor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719718E2018D00D43F66 /* PebbleVendor.framework */; };
 		C018719A18E2019400D43F66 /* PebbleKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719918E2019400D43F66 /* PebbleKit.framework */; };
 		C01871B318E2044E00D43F66 /* NSMutableArray+Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */; };
+		C0EA987918E20C9E00D1DE61 /* PebbleController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0EA987818E20C9E00D1DE61 /* PebbleController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,8 @@
 		C0EA987418E2078D00D1DE61 /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = appinfo.json; path = HelloWatchApp/appinfo.json; sourceTree = SOURCE_ROOT; };
 		C0EA987518E2079300D1DE61 /* HelloWatchApp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = HelloWatchApp.c; path = HelloWatchApp/src/HelloWatchApp.c; sourceTree = SOURCE_ROOT; };
 		C0EA987618E20B3500D1DE61 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
+		C0EA987718E20C9E00D1DE61 /* PebbleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PebbleController.h; sourceTree = "<group>"; };
+		C0EA987818E20C9E00D1DE61 /* PebbleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PebbleController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +161,8 @@
 				C018716818E1FF8900D43F66 /* Main.storyboard */,
 				C018716B18E1FF8900D43F66 /* ViewController.h */,
 				C018716C18E1FF8900D43F66 /* ViewController.m */,
+				C0EA987718E20C9E00D1DE61 /* PebbleController.h */,
+				C0EA987818E20C9E00D1DE61 /* PebbleController.m */,
 				C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */,
 				C01871B118E2044E00D43F66 /* NSMutableArray+Queue.h */,
 				C018716E18E1FF8900D43F66 /* Images.xcassets */,
@@ -313,6 +318,7 @@
 			files = (
 				C018716D18E1FF8900D43F66 /* ViewController.m in Sources */,
 				C018716718E1FF8900D43F66 /* AppDelegate.m in Sources */,
+				C0EA987918E20C9E00D1DE61 /* PebbleController.m in Sources */,
 				C018716318E1FF8900D43F66 /* main.m in Sources */,
 				C01871B318E2044E00D43F66 /* NSMutableArray+Queue.m in Sources */,
 			);
