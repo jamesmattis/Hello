@@ -75,8 +75,8 @@
 		C0EA986E18E2059100D1DE61 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = Readme/README.md; sourceTree = "<group>"; };
 		C0EA986F18E2059D00D1DE61 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Images/Default.png; sourceTree = "<group>"; };
 		C0EA987018E2059D00D1DE61 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Images/Icon.png; sourceTree = "<group>"; };
-		C0EA987218E205BC00D1DE61 /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = appinfo.json; path = HelloWatchApp/appinfo.json; sourceTree = "<group>"; };
-		C0EA987318E205C400D1DE61 /* HelloWatchApp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = HelloWatchApp.c; path = HelloWatchApp/src/HelloWatchApp.c; sourceTree = "<group>"; };
+		C0EA987418E2078D00D1DE61 /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = appinfo.json; path = HelloWatchApp/appinfo.json; sourceTree = SOURCE_ROOT; };
+		C0EA987518E2079300D1DE61 /* HelloWatchApp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = HelloWatchApp.c; path = HelloWatchApp/src/HelloWatchApp.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,8 +201,8 @@
 		C0EA987118E205AF00D1DE61 /* Pebble Watch App */ = {
 			isa = PBXGroup;
 			children = (
-				C0EA987218E205BC00D1DE61 /* appinfo.json */,
-				C0EA987318E205C400D1DE61 /* HelloWatchApp.c */,
+				C0EA987418E2078D00D1DE61 /* appinfo.json */,
+				C0EA987518E2079300D1DE61 /* HelloWatchApp.c */,
 			);
 			name = "Pebble Watch App";
 			sourceTree = "<group>";
