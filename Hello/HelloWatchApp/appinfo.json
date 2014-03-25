@@ -1,0 +1,17 @@
+{
+  "uuid": "a3e33d68-b351-4173-ab8f-dfeeea46b1cd",
+  "shortName": "hello",
+  "longName": "hello",
+  "companyName": "World Champ Tech",
+  "versionCode": 1,
+  "versionLabel": "1.0.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
