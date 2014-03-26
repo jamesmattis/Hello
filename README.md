@@ -89,6 +89,8 @@ dispatch_barrier_sync(queue, ^{
 
 - When PebbleKit AppMessage pushMessage returns an error, the message has not been successfully sent to the watch. When 'Use Queue' is set to yes, it will attempt to resend the previous dictionary.
 
+- On the Pebble Watch App, an AppMessageOutboxFailed handler is declared, which similarly looks for NACK'd message errors, and attempts to resend the failed dictionary.
+
 - PebbleKit in general handles errors well. After some errors (particularly a series of Code 10 Timeout errors) PebbleKit will automatically reset itself. However, it doesn't seem to always reset itself as quickly as I would like. So, I manually reset the pebble session on each error in this exmaple. A reset simply calls closeSession followed by openSession. Most of the appMessage method automatically call openSession when they are called if the session isn't open. This example calls closeSession on each error, and then attempts to push an update from the closeSession callback block:
 
 ```Objective-C
@@ -108,12 +110,12 @@ dispatch_barrier_sync(queue, ^{
 
 - Run time is the total test run time.
 - Number of pushes counts the total number of times that pushPebbleUpdate has been called. Successful pushes counts the number of times the queue wasn't blocked because it had yet to respond from the previous push.
-- Pushed bytes gives the total bytes pushed, and the rate at which bytes have been pushed. The max rate is typically between 2.4-2.8 kB/s. This corresponds to 20-25 pushes per second, or 0.05-0.04 seconds between pushes. At fewer than 20 pushes per second, the queue typically doesn't fill. Above that, it will fill.
+- Pushed bytes gives the total bytes pushed, and the rate at which bytes have been pushed. The max rate is typically between 2.2-2.8 kB/s. This corresponds to 20-25 pushes per second, or 0.05-0.04 seconds between pushes. At fewer than 20 pushes per second, the queue typically doesn't fill. Above that, it will fill.
 - Received messages are the number of messages sent from the watch to the phone.
-- Block pushes are the number of pushPebbleUpdate attempts that could not be sent because appMessage had yet to respond from a previous push.
+- Blocked pushes are the number of pushPebbleUpdate attempts that could not be sent because appMessage had yet to respond from a previous push. It does not mean the message wasn't sent, but just that the system was forced to wait until an ACK was received before it was able to send the message.
 - Blocked bytes are the total bytes that couldn't be pushed, including rate.
-- Queued message dictionaries is the number of dictionaries currently in the queue.
-- Failed pushes and total errors count the number of errors returned in the appMessage callback block.
+- Queued message dictionaries is the number of dictionaries currently in the queue. At 0.05 seconds between push attempts, the number in the queue is typcically small, but bounded (0-10 dictionaries in the queue). At faster push rates (< 0.05 seconds between pushes) the queue will start to fill because the messages aren't getting cleared out fast enough by the App Message System.
+- Failed pushes and total errors count the number of errors returned in the appMessage callback block. It is the number of NACK'd messages.
 
 ##About the Code
 
@@ -131,6 +133,8 @@ Dictionaries to push via App Message can then be queue using:
 ```
 
 - The PebbleController class has a bunch of pebble watch BOOL properties that aren't necessary in a production app, but are helpful in understanding the source and nature of various errors. Really, you just need on 'okToPushUpdate' BOOL that is set to YES whenever the appMessage system is setup, open, and has successfully returned the completion block from the previous push. There is also a lot of additional logging that isn't required in production.
+
+- There is probably some silly bug in here somewhere. If you find something, let me know about it. Thanks!
 
 #License
 

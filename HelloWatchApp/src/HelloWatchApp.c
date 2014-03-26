@@ -226,6 +226,8 @@ static void out_sent_handler(DictionaryIterator *sent, void *context)
 
 static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context)
 {
+    // Log Error
+    
     time_t now = time(NULL);
     struct tm *clock_time = localtime(&now);
     
@@ -277,6 +279,75 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
     {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message out_failed_handler: APP_MSG_CALLBACK_NOT_REGISTERED", error_time_text);
     }
+    
+    // Error Handling
+    
+    if (reason == APP_MSG_SEND_TIMEOUT || reason == APP_MSG_BUSY)
+    {
+        // Try Reseanding Message
+        
+        // Create New Output Iterator
+        
+        DictionaryIterator *iterator;
+        
+        if (app_message_outbox_begin(&iterator) != APP_MSG_OK)
+        {
+            return;
+        }
+        
+        // For Each Tuple in Failed Dictionary Iterator, Read Value, Classify Value, and Write to New Iterator
+        
+        Tuple *tuple = dict_read_first(failed);
+        
+        while (tuple)
+        {
+            switch (tuple->type)
+            {
+                case TUPLE_BYTE_ARRAY:
+                    dict_write_data	(iterator, tuple->key, tuple->value->data, tuple->length);
+                    break;
+                case TUPLE_CSTRING:
+                    dict_write_cstring(iterator, tuple->key, tuple->value->cstring);
+                    break;
+                case TUPLE_UINT:
+                    if (tuple->length == 1)
+                    {
+                        dict_write_uint8(iterator, tuple->key, tuple->value->uint8);
+                    }
+                    else if (tuple->length == 2)
+                    {
+                        dict_write_uint16(iterator, tuple->key, tuple->value->uint16);
+                    }
+                    else
+                    {
+                        dict_write_uint32(iterator, tuple->key, tuple->value->uint32);
+                    }
+                    break;
+                case TUPLE_INT:
+                    if (tuple->length == 1)
+                    {
+                        dict_write_int8(iterator, tuple->key, tuple->value->int8);
+                    }
+                    else if (tuple->length == 2)
+                    {
+                        dict_write_int16(iterator, tuple->key, tuple->value->int16);
+                    }
+                    else
+                    {
+                        dict_write_int32(iterator, tuple->key, tuple->value->int32);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            tuple = dict_read_next(failed);
+        }
+        
+        // Resend App Message
+        
+        app_message_outbox_send();
+    }
 }
 
 static void in_received_handler(DictionaryIterator *received, void *context)
@@ -316,7 +387,6 @@ static void in_received_handler(DictionaryIterator *received, void *context)
     if (sniff_tuple)
     {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld SNIFF_KEY RECEIVED", error_time_text, elapsedTime);
-        
         
         if (sniff_tuple->value->uint8)
         {
