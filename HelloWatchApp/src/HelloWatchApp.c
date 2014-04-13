@@ -282,7 +282,7 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
     
     // Error Handling
     
-    if (reason == APP_MSG_SEND_TIMEOUT || reason == APP_MSG_BUSY)
+    if ((reason == APP_MSG_SEND_TIMEOUT || reason == APP_MSG_BUSY) && bluetooth_connection_service_peek())
     {
         // Try Reseanding Message
         

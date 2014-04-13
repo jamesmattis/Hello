@@ -341,6 +341,13 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
 {
     NSLog(@"installHandlers");
     
+    if (self.appUpdateHandle)
+    {
+        [self.watch appMessagesRemoveUpdateHandler:self.appUpdateHandle];
+        
+        self.appUpdateHandle = nil;
+    }
+    
     __weak __typeof__(self) weakSelf = self;
     
     self.appUpdateHandle = [self.watch appMessagesAddReceiveUpdateHandler:^BOOL(PBWatch *watch, NSDictionary *update){
@@ -385,45 +392,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             [strongSelf.delegate pebbleLaunchSuccess];
         }
     }];
-}
-
-#pragma mark - Reconnect Pebble Display Method
-
--(void)reconnectPebbleDisplay
-{
-    NSLog(@"reconnectPebbleDisplay");
-    
-    if (self.pebbleHardwareEnabled)
-    {
-        // If Reconnecting, Open Session
-        
-        self.isReconnecting = YES;
-        
-        if (self.isReconnecting)
-        {
-            [[PBPebbleCentral defaultCentral] setDelegate:self];
-            
-            if ([PBPebbleCentral defaultCentral].connectedWatches.count > 0)
-            {
-                self.watch = [PBPebbleCentral defaultCentral].lastConnectedWatch;
-                
-                if (self.watch.delegate != self)
-                    [self.watch setDelegate:self];
-                
-                [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
-                
-                if ([[PBPebbleCentral defaultCentral] hasValidAppUUID])
-                {
-                    // Do Nothing
-                    
-                    NSLog(@"watch reconnectPebbleDisplay hasValidAppUUID");
-                    
-                    self.pebbleAppUUIDSet = YES;
-                    self.isSendingPebbleUpdate = NO;
-                }
-            }
-        }
-    }
 }
 
 #pragma mark - Connect Pebble Display Method
@@ -709,7 +677,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                                          strongSelf.isSendingPebbleUpdate = NO;
                                      });
                                      
-                                     if (!weakSelf.isResettingPebble)
+                                     if (!strongSelf.isResettingPebble)
                                          dispatch_async(dispatch_get_main_queue(), ^(void) {
                                              strongSelf.isManuallyResettingPebble = YES;
                                              

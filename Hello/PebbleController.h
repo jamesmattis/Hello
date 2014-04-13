@@ -107,10 +107,6 @@ enum PebbleData
 
 -(void)connectPebbleDisplay;
 
-// Reconnect Pebble Display Method
-
--(void)reconnectPebbleDisplay;
-
 // Install Handlers Method
 
 -(void)installHandlers;
