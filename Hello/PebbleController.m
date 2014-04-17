@@ -195,7 +195,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
 {
     NSLog(@"enablePebbleHardware");
     
-    [PBPebbleCentral setDebugLogsEnabled:YES];
+    [PBPebbleCentral setDebugLogsEnabled:NO];
     
     [[PBPebbleCentral defaultCentral] setDelegate:self];
     

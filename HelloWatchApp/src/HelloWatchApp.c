@@ -184,9 +184,71 @@ static void send_launch_message(void)
     app_message_outbox_send();
 }
 
-// Tick Timer Handler
+// Tick Timer Handlers
 
-static void tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
+static void second_tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
+{
+    if ((rand() % 10) < 5)
+    {
+        switch (((rand() % 10)))
+        {
+            case 0:
+                strcpy	(text_layer_buffer, "hello");
+                text_layer_set_text(text_layer, "hello");
+                break;
+            case 1:
+                strcpy	(text_layer_buffer, "hallo");
+                text_layer_set_text(text_layer, "hallo");
+                break;
+            case 2:
+                strcpy	(text_layer_buffer, "hola");
+                text_layer_set_text(text_layer, "hola");
+                break;
+            case 3:
+                strcpy	(text_layer_buffer, "hej");
+                text_layer_set_text(text_layer, "hej");
+                break;
+            case 4:
+                strcpy	(text_layer_buffer, "bonjour");
+                text_layer_set_text(text_layer, "bonjour");
+                break;
+            case 5:
+                strcpy	(text_layer_buffer, "ciao");
+                text_layer_set_text(text_layer, "ciao");
+                break;
+            case 6:
+                strcpy	(text_layer_buffer, "salve");
+                text_layer_set_text(text_layer, "salve");
+                break;
+            case 7:
+                strcpy	(text_layer_buffer, "ola");
+                text_layer_set_text(text_layer, "ola");
+                break;
+            case 8:
+                strcpy	(text_layer_buffer, "chaoa");
+                text_layer_set_text(text_layer, "chaoa");
+                break;
+            case 9:
+                strcpy	(text_layer_buffer, "kaixo");
+                text_layer_set_text(text_layer, "kaixo");
+                break;
+            default:
+                break;
+        }
+        
+        time_t now = time(NULL);
+        
+        time_t elapsedTime = now - startTime;
+        
+        char elapsed_time_text[] = "999999";
+        
+        snprintf(elapsed_time_text, sizeof(elapsed_time_text), "%ld", elapsedTime);
+        
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message second_tick_timer_handler: %s %ld", text_layer_buffer, elapsedTime);
+    }
+}
+
+static void minute_tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
 {
     // Received each minute
     
@@ -535,8 +597,6 @@ static void window_unload(Window *window)
     text_layer_destroy(text_layer);
     
     layer_destroy(base_layer);
-    
-    tick_timer_service_unsubscribe();
 }
 
 // Init Variables Method
@@ -588,7 +648,11 @@ static void init_tick_service(void)
 {
     // Subscribe to tick timer service
     
-    tick_timer_service_subscribe(MINUTE_UNIT, tick_timer_handler);
+    tick_timer_service_subscribe(MINUTE_UNIT, minute_tick_timer_handler);
+    
+    srand(time(NULL));
+    
+    tick_timer_service_subscribe(SECOND_UNIT, second_tick_timer_handler);
 }
 
 static void init_focus_service(void)
@@ -621,9 +685,10 @@ void handle_deinit(void)
     
     // De-init
     
-    window_destroy(window);
-    
     app_focus_service_unsubscribe();
+    app_message_deregister_callbacks();
+    tick_timer_service_unsubscribe();
+    window_destroy(window);
 }
 
 int main(void)
