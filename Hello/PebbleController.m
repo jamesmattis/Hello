@@ -131,7 +131,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     NSLog(@"BlockedBytes: %1.1f MB %1.1f kB %1.3f kB/s", ((float)self.blockedBytes / 1000000.0), ((float)self.blockedBytes / 1000.0), ((float)self.blockedBytes / 1000.0) / self.runTime);
     NSLog(@"Receieved Messages: %ld", (long)self.receivedMessages);
 
-    
     if (self.useQueue)
     {
         NSInteger bytesInQueue = 0;
@@ -585,9 +584,9 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     self.pushes++;
     
-    // For Max Rate Testing, Update Stats Every 1000 pushes
+    // For Max Rate Testing, Update Stats Every 10000 pushes
     
-    if (fmodf(((float) self.pushes), 1000.0) == 0.0)
+    if (fmodf(((float) self.pushes), 10000.0) == 0.0)
     {
         [self logStats];
     }

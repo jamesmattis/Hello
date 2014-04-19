@@ -6,6 +6,10 @@ static Window *window;
 static TextLayer *text_layer;
 static Layer *base_layer;
 
+// Data buffer
+
+static uint8_t *data_buffer;
+
 // Text Layer Char Buffer
 
 static char text_layer_buffer[8];
@@ -18,7 +22,28 @@ static time_t lastUpdateTime;
 
 static time_t startTime;
 
+// Display Label Counter
+
+static uint16_t textCounter;
+
+// Pushed Messages Counter
+
+static uint16_t pushedMessagesCounter;
+
+// Received Messages Counter
+
+static uint16_t receivedMessagesCounter;
+
+// Set Messages Counter
+
+static uint16_t setMessagesCounter;
+
 // Data Key Enum
+
+// Animations
+
+static PropertyAnimation *text_layer_animation_up;
+static PropertyAnimation *text_layer_animation_down;
 
 enum DataKey
 {
@@ -26,6 +51,20 @@ enum DataKey
     DATA_KEY = 1,          // JUNK DATA;
     SNIFF_KEY = 2          // TUPLE_UINT8
 };
+
+static void text_layer_animation_up_completed (Animation *animation, void *data)
+{
+    // Start Down Animation
+    
+    animation_schedule((Animation*) text_layer_animation_down);
+}
+
+static void text_layer_animation_down_completed (Animation *animation, void *data)
+{
+    // Start Up Animation
+    
+    animation_schedule((Animation*) text_layer_animation_up);
+}
 
 // Click Config Handler Declarations
 
@@ -38,17 +77,6 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context);
 
 static void app_focus_handler(bool in_focus)
 {
-    char message_text[12];
-    
-    if (in_focus)
-    {
-        strcpy	(message_text, "IN FOCUS");
-    }
-    else
-    {
-        strcpy	(message_text, "NOT IN FOCUS");
-    }
-    
     // Send App Message Out
     
     DictionaryIterator *iterator;
@@ -58,9 +86,19 @@ static void app_focus_handler(bool in_focus)
         return;
     }
     
-    if (dict_write_cstring(iterator, MESSAGE_KEY, message_text) != DICT_OK)
+    if (in_focus)
     {
-        return;
+        if (dict_write_cstring(iterator, MESSAGE_KEY, "IN FOCUS") != DICT_OK)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (dict_write_cstring(iterator, MESSAGE_KEY, "NOT IN FOCUS") != DICT_OK)
+        {
+            return;
+        }
     }
     
     app_message_outbox_send();
@@ -184,73 +222,63 @@ static void send_launch_message(void)
     app_message_outbox_send();
 }
 
-// Tick Timer Handlers
+// Tick Timer Handler
 
-static void second_tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
+static void tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
 {
-    if ((rand() % 10) < 5)
-    {
-        switch (((rand() % 10)))
-        {
-            case 0:
-                strcpy	(text_layer_buffer, "hello");
-                text_layer_set_text(text_layer, "hello");
-                break;
-            case 1:
-                strcpy	(text_layer_buffer, "hallo");
-                text_layer_set_text(text_layer, "hallo");
-                break;
-            case 2:
-                strcpy	(text_layer_buffer, "hola");
-                text_layer_set_text(text_layer, "hola");
-                break;
-            case 3:
-                strcpy	(text_layer_buffer, "hej");
-                text_layer_set_text(text_layer, "hej");
-                break;
-            case 4:
-                strcpy	(text_layer_buffer, "bonjour");
-                text_layer_set_text(text_layer, "bonjour");
-                break;
-            case 5:
-                strcpy	(text_layer_buffer, "ciao");
-                text_layer_set_text(text_layer, "ciao");
-                break;
-            case 6:
-                strcpy	(text_layer_buffer, "salve");
-                text_layer_set_text(text_layer, "salve");
-                break;
-            case 7:
-                strcpy	(text_layer_buffer, "ola");
-                text_layer_set_text(text_layer, "ola");
-                break;
-            case 8:
-                strcpy	(text_layer_buffer, "chaoa");
-                text_layer_set_text(text_layer, "chaoa");
-                break;
-            case 9:
-                strcpy	(text_layer_buffer, "kaixo");
-                text_layer_set_text(text_layer, "kaixo");
-                break;
-            default:
-                break;
-        }
-        
-        time_t now = time(NULL);
-        
-        time_t elapsedTime = now - startTime;
-        
-        char elapsed_time_text[] = "999999";
-        
-        snprintf(elapsed_time_text, sizeof(elapsed_time_text), "%ld", elapsedTime);
-        
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message second_tick_timer_handler: %s %ld", text_layer_buffer, elapsedTime);
+    // Received each second
+    
+    textCounter++;
+    
+    if (textCounter > 9)
+        textCounter = 0;
+    
+    switch (textCounter) {
+        case 0:
+            strcpy	(text_layer_buffer, "hello");
+            text_layer_set_text(text_layer, "hello");
+            break;
+        case 1:
+            strcpy	(text_layer_buffer, "hallo");
+            text_layer_set_text(text_layer, "hallo");
+            break;
+        case 2:
+            strcpy	(text_layer_buffer, "hola");
+            text_layer_set_text(text_layer, "hola");
+            break;
+        case 3:
+            strcpy	(text_layer_buffer, "hej");
+            text_layer_set_text(text_layer, "hej");
+            break;
+        case 4:
+            strcpy	(text_layer_buffer, "bonjour");
+            text_layer_set_text(text_layer, "bonjour");
+            break;
+        case 5:
+            strcpy	(text_layer_buffer, "ciao");
+            text_layer_set_text(text_layer, "ciao");
+            break;
+        case 6:
+            strcpy	(text_layer_buffer, "salve");
+            text_layer_set_text(text_layer, "salve");
+            break;
+        case 7:
+            strcpy	(text_layer_buffer, "ola");
+            text_layer_set_text(text_layer, "ola");
+            break;
+        case 8:
+            strcpy	(text_layer_buffer, "chaoa");
+            text_layer_set_text(text_layer, "chaoa");
+            break;
+        case 9:
+            strcpy	(text_layer_buffer, "kaixo");
+            text_layer_set_text(text_layer, "kaixo");
+            break;
+        default:
+            break;
     }
-}
-
-static void minute_tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
-{
-    // Received each minute
+    
+    setMessagesCounter++;
     
     time_t now = time(NULL);
     
@@ -260,23 +288,34 @@ static void minute_tick_timer_handler(struct tm *tick_time, TimeUnits units_chan
     
     snprintf(elapsed_time_text, sizeof(elapsed_time_text), "%ld", elapsedTime);
     
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message tick_timer_handler %ld", elapsedTime);
+    if (setMessagesCounter % 10000 == 0)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message tick_timer_handler set_text: %s %ld", text_layer_buffer, elapsedTime);
     
-    // Send App Message Out
+    // Log Message Key to App Message System every minute
     
-    DictionaryIterator *iterator;
-    
-    if (app_message_outbox_begin(&iterator) != APP_MSG_OK)
+    if (tick_time->tm_sec % 59 == 0)
     {
-        return;
+        pushedMessagesCounter++;
+
+        if (pushedMessagesCounter % 60 == 0)
+            APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message tick_timer_handler %ld", elapsedTime);
+        
+        // Send App Message Out
+        
+        DictionaryIterator *iterator;
+        
+        if (app_message_outbox_begin(&iterator) != APP_MSG_OK)
+        {
+            return;
+        }
+        
+        if (dict_write_cstring(iterator, MESSAGE_KEY, elapsed_time_text) != DICT_OK)
+        {
+            return;
+        }
+        
+        app_message_outbox_send();
     }
-    
-    if (dict_write_cstring(iterator, MESSAGE_KEY, elapsed_time_text) != DICT_OK)
-    {
-        return;
-    }
-    
-    app_message_outbox_send();
 }
 
 // App Message Callbacks
@@ -428,10 +467,12 @@ static void in_received_handler(DictionaryIterator *received, void *context)
     
     strftime(error_time_text, sizeof(error_time_text), "%T", clock_time);
     
+    receivedMessagesCounter++;
+    
     // Handle Tuples
     
     Tuple *message_tuple = dict_find(received, MESSAGE_KEY);
-    
+    Tuple *data_tuple = dict_find(received, DATA_KEY);
     Tuple *sniff_tuple = dict_find(received, SNIFF_KEY);
 
     if (message_tuple)
@@ -439,11 +480,65 @@ static void in_received_handler(DictionaryIterator *received, void *context)
         strcpy	(text_layer_buffer, message_tuple->value->cstring);
         text_layer_set_text(text_layer, message_tuple->value->cstring);
         
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld message: %s", error_time_text, elapsedTime, message_tuple->value->cstring);
+        if (strcmp (message_tuple->value->cstring, "hello") == 0)
+        {
+            textCounter = 0;
+        }
+        if (strcmp (message_tuple->value->cstring, "hallo") == 0)
+        {
+            textCounter = 1;
+        }
+        if (strcmp (message_tuple->value->cstring, "hola") == 0)
+        {
+            textCounter = 2;
+        }
+        if (strcmp (message_tuple->value->cstring, "hej") == 0)
+        {
+            textCounter = 3;
+        }
+        if (strcmp (message_tuple->value->cstring, "bonjour") == 0)
+        {
+            textCounter = 4;
+        }
+        if (strcmp (message_tuple->value->cstring, "ciao") == 0)
+        {
+            textCounter = 5;
+        }
+        if (strcmp (message_tuple->value->cstring, "salve") == 0)
+        {
+            textCounter = 6;
+        }
+        if (strcmp (message_tuple->value->cstring, "ola") == 0)
+        {
+            textCounter = 7;
+        }
+        if (strcmp (message_tuple->value->cstring, "chaoa") == 0)
+        {
+            textCounter = 8;
+        }
+        if (strcmp (message_tuple->value->cstring, "kaixo") == 0)
+        {
+            textCounter = 9;
+        }
+        
+        if (receivedMessagesCounter % 10000 == 0)
+            APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld message: %s", error_time_text, elapsedTime, message_tuple->value->cstring);
     }
     else
     {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld NO MESSAGE TUPLE", error_time_text, elapsedTime);
+    }
+    
+    if (data_tuple)
+    {
+        if (data_buffer != NULL)
+        {
+            free(data_buffer);
+        }
+        
+        data_buffer = malloc(data_tuple->length);
+        
+        memcpy(data_buffer, data_tuple->value->data, data_tuple->length);
     }
     
     if (sniff_tuple)
@@ -585,6 +680,16 @@ static void init_text_layers(void)
     // Set Window Click Config Provider
     
     window_set_click_config_provider(window, (ClickConfigProvider) config_provider);
+    
+    text_layer_animation_up = property_animation_create_layer_frame(text_layer_get_layer(text_layer), &GRect(0, 67, 144, 34), &GRect(0, -34, 144, 34));
+    animation_set_duration((Animation*) text_layer_animation_up, 5000);
+    animation_set_curve((Animation*) text_layer_animation_up, AnimationCurveEaseInOut);
+    animation_set_handlers((Animation*) text_layer_animation_up, (AnimationHandlers) {.stopped = (AnimationStoppedHandler) text_layer_animation_up_completed,}, NULL);
+    
+    text_layer_animation_down = property_animation_create_layer_frame(text_layer_get_layer(text_layer), &GRect(0,-34, 144, 34), &GRect(0, 67, 144, 34));
+    animation_set_duration((Animation*) text_layer_animation_down, 5000);
+    animation_set_curve((Animation*) text_layer_animation_down, AnimationCurveEaseInOut);
+    animation_set_handlers((Animation*) text_layer_animation_down, (AnimationHandlers) {.stopped = (AnimationStoppedHandler) text_layer_animation_down_completed,}, NULL);
 }
 
 static void window_load(Window *window)
@@ -594,9 +699,25 @@ static void window_load(Window *window)
 
 static void window_unload(Window *window)
 {
+    property_animation_destroy(text_layer_animation_up);
+    property_animation_destroy(text_layer_animation_down);
+    
+    Layer *window_layer = window_get_root_layer(window);
+    layer_remove_child_layers(window_layer);
+
+    layer_remove_child_layers(base_layer);
+
     text_layer_destroy(text_layer);
     
     layer_destroy(base_layer);
+}
+
+
+static void window_appear(Window *window)
+{
+    // Start Animation
+    
+    animation_schedule((Animation*) text_layer_animation_up);
 }
 
 // Init Variables Method
@@ -605,11 +726,17 @@ static void init_variables(void)
 {
     // Init char pointers
 	
-	strcpy	(text_layer_buffer, "hello");
+	strcpy (text_layer_buffer, "hello");
     
     lastUpdateTime = time(NULL);
     
     startTime = time(NULL);
+    
+    textCounter = 0;
+    
+    pushedMessagesCounter = 0;
+    receivedMessagesCounter = 0;
+    setMessagesCounter = 0;
 }
 
 // Init Root Window Method
@@ -624,6 +751,7 @@ static void init_window(void)
     
     window_set_window_handlers(window, (WindowHandlers) {
         .load = window_load,
+        .appear = window_appear,
         .unload = window_unload
     });
     
@@ -648,11 +776,7 @@ static void init_tick_service(void)
 {
     // Subscribe to tick timer service
     
-    tick_timer_service_subscribe(MINUTE_UNIT, minute_tick_timer_handler);
-    
-    srand(time(NULL));
-    
-    tick_timer_service_subscribe(SECOND_UNIT, second_tick_timer_handler);
+    tick_timer_service_subscribe(SECOND_UNIT, tick_timer_handler);
 }
 
 static void init_focus_service(void)
@@ -666,10 +790,10 @@ void handle_init(void)
 {
     // Init
     
+    init_variables();
+    init_window();
     init_app_messages();
     init_focus_service();
-    init_window();
-    init_variables();
     init_tick_service();
     
     // Send Launch Message
@@ -689,6 +813,11 @@ void handle_deinit(void)
     app_message_deregister_callbacks();
     tick_timer_service_unsubscribe();
     window_destroy(window);
+    
+    if (data_buffer != NULL)
+    {
+        free(data_buffer);
+    }
 }
 
 int main(void)
