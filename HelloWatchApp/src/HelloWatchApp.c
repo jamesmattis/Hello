@@ -38,33 +38,12 @@ static uint16_t receivedMessagesCounter;
 
 static uint16_t setMessagesCounter;
 
-// Data Key Enum
-
-// Animations
-
-static PropertyAnimation *text_layer_animation_up;
-static PropertyAnimation *text_layer_animation_down;
-
 enum DataKey
 {
     MESSAGE_KEY = 0,       // TUPLE_CSTRING;
     DATA_KEY = 1,          // JUNK DATA;
     SNIFF_KEY = 2          // TUPLE_UINT8
 };
-
-static void text_layer_animation_up_completed (Animation *animation, void *data)
-{
-    // Start Down Animation
-    
-    animation_schedule((Animation*) text_layer_animation_down);
-}
-
-static void text_layer_animation_down_completed (Animation *animation, void *data)
-{
-    // Start Up Animation
-    
-    animation_schedule((Animation*) text_layer_animation_up);
-}
 
 // Click Config Handler Declarations
 
@@ -453,6 +432,29 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
 
 static void in_received_handler(DictionaryIterator *received, void *context)
 {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler received.size: %ld", dict_size(received));
+    
+    Tuple *tuple = dict_read_first(received);
+    
+    while (tuple)
+    {
+        switch (tuple->key) {
+            case MESSAGE_KEY:
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: DISTANCE_KEY");
+                break;
+            case DATA_KEY:
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: DATA_KEY");
+                break;
+            case SNIFF_KEY:
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: SNIFF_KEY");
+                break;
+            default:
+                break;
+        }
+        
+        tuple = dict_read_next(received);
+    }
+    
     // Log Time & Elapsed Time
     
     time_t now = time(NULL);
@@ -477,46 +479,74 @@ static void in_received_handler(DictionaryIterator *received, void *context)
 
     if (message_tuple)
     {
-        strcpy	(text_layer_buffer, message_tuple->value->cstring);
-        text_layer_set_text(text_layer, message_tuple->value->cstring);
+        // At high data rates, there is no guarantee the memory storing the message_tuple will not get overwritten by a new, incoming app message dictionary.
+        // Seting the text layer to the message_tuple->value->cstring can cause unexpected results.
+        // Copying the cstring value to a buffer and then setting the text layer text to the buffer appears to eliminate this issue.
         
-        if (strcmp (message_tuple->value->cstring, "hello") == 0)
+        // This code can produce unexpected results:
+        
+        /*
+        if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
+        {
+            strcpy	(text_layer_buffer, message_tuple->value->cstring);
+            
+            text_layer_set_text(text_layer, message_tuple->value->cstring);
+        }
+        */
+        
+        if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
+        {
+            strcpy	(text_layer_buffer, message_tuple->value->cstring);
+            
+            text_layer_set_text(text_layer, message_tuple->value->cstring);
+        }
+        
+        // This code works as expected:
+        
+        if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
+        {
+            strcpy	(text_layer_buffer, message_tuple->value->cstring);
+        
+            text_layer_set_text(text_layer, text_layer_buffer);
+        }
+        
+        if (strcmp (text_layer_buffer, "hello") == 0)
         {
             textCounter = 0;
         }
-        if (strcmp (message_tuple->value->cstring, "hallo") == 0)
+        if (strcmp (text_layer_buffer, "hallo") == 0)
         {
             textCounter = 1;
         }
-        if (strcmp (message_tuple->value->cstring, "hola") == 0)
+        if (strcmp (text_layer_buffer, "hola") == 0)
         {
             textCounter = 2;
         }
-        if (strcmp (message_tuple->value->cstring, "hej") == 0)
+        if (strcmp (text_layer_buffer, "hej") == 0)
         {
             textCounter = 3;
         }
-        if (strcmp (message_tuple->value->cstring, "bonjour") == 0)
+        if (strcmp (text_layer_buffer, "bonjour") == 0)
         {
             textCounter = 4;
         }
-        if (strcmp (message_tuple->value->cstring, "ciao") == 0)
+        if (strcmp (text_layer_buffer, "ciao") == 0)
         {
             textCounter = 5;
         }
-        if (strcmp (message_tuple->value->cstring, "salve") == 0)
+        if (strcmp (text_layer_buffer, "salve") == 0)
         {
             textCounter = 6;
         }
-        if (strcmp (message_tuple->value->cstring, "ola") == 0)
+        if (strcmp (text_layer_buffer, "ola") == 0)
         {
             textCounter = 7;
         }
-        if (strcmp (message_tuple->value->cstring, "chaoa") == 0)
+        if (strcmp (text_layer_buffer, "chaoa") == 0)
         {
             textCounter = 8;
         }
-        if (strcmp (message_tuple->value->cstring, "kaixo") == 0)
+        if (strcmp (text_layer_buffer, "kaixo") == 0)
         {
             textCounter = 9;
         }
@@ -680,16 +710,6 @@ static void init_text_layers(void)
     // Set Window Click Config Provider
     
     window_set_click_config_provider(window, (ClickConfigProvider) config_provider);
-    
-    text_layer_animation_up = property_animation_create_layer_frame(text_layer_get_layer(text_layer), &GRect(0, 67, 144, 34), &GRect(0, -34, 144, 34));
-    animation_set_duration((Animation*) text_layer_animation_up, 5000);
-    animation_set_curve((Animation*) text_layer_animation_up, AnimationCurveEaseInOut);
-    animation_set_handlers((Animation*) text_layer_animation_up, (AnimationHandlers) {.stopped = (AnimationStoppedHandler) text_layer_animation_up_completed,}, NULL);
-    
-    text_layer_animation_down = property_animation_create_layer_frame(text_layer_get_layer(text_layer), &GRect(0,-34, 144, 34), &GRect(0, 67, 144, 34));
-    animation_set_duration((Animation*) text_layer_animation_down, 5000);
-    animation_set_curve((Animation*) text_layer_animation_down, AnimationCurveEaseInOut);
-    animation_set_handlers((Animation*) text_layer_animation_down, (AnimationHandlers) {.stopped = (AnimationStoppedHandler) text_layer_animation_down_completed,}, NULL);
 }
 
 static void window_load(Window *window)
@@ -699,9 +719,6 @@ static void window_load(Window *window)
 
 static void window_unload(Window *window)
 {
-    property_animation_destroy(text_layer_animation_up);
-    property_animation_destroy(text_layer_animation_down);
-    
     Layer *window_layer = window_get_root_layer(window);
     layer_remove_child_layers(window_layer);
 
@@ -712,12 +729,9 @@ static void window_unload(Window *window)
     layer_destroy(base_layer);
 }
 
-
 static void window_appear(Window *window)
 {
-    // Start Animation
-    
-    animation_schedule((Animation*) text_layer_animation_up);
+    // Do Nothing
 }
 
 // Init Variables Method
