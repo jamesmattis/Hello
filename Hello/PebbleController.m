@@ -565,33 +565,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         [strongSelf.pebbleMessageUpdateQueue enqueue:updateDictionary];
     });
     
-    // Add random data dictionaries to queue
-    
-    dispatch_barrier_sync(queue, ^{
-        __strong __typeof__(self) strongSelf = weakSelf;
-        
-        NSMutableData *randomData1 = [NSMutableData dataWithLength:116];
-        [[NSInputStream inputStreamWithFileAtPath:@"/dev/urandom"] read:(uint8_t*)[randomData1 mutableBytes] maxLength:116];
-        
-        NSMutableData *randomData2 = [NSMutableData dataWithLength:116];
-        [[NSInputStream inputStreamWithFileAtPath:@"/dev/urandom"] read:(uint8_t*)[randomData2 mutableBytes] maxLength:116];
-        
-        NSMutableData *randomData3 = [NSMutableData dataWithLength:116];
-        [[NSInputStream inputStreamWithFileAtPath:@"/dev/urandom"] read:(uint8_t*)[randomData3 mutableBytes] maxLength:116];
-        
-        NSMutableData *randomData4 = [NSMutableData dataWithLength:116];
-        [[NSInputStream inputStreamWithFileAtPath:@"/dev/urandom"] read:(uint8_t*)[randomData4 mutableBytes] maxLength:116];
-        
-        NSMutableData *randomData5 = [NSMutableData dataWithLength:116];
-        [[NSInputStream inputStreamWithFileAtPath:@"/dev/urandom"] read:(uint8_t*)[randomData5 mutableBytes] maxLength:116];
-        
-        [strongSelf.pebbleMessageUpdateQueue enqueue:@{@(CustomAppDataKey) : randomData1}];
-        [strongSelf.pebbleMessageUpdateQueue enqueue:@{@(CustomAppDataKey) : randomData2}];
-        [strongSelf.pebbleMessageUpdateQueue enqueue:@{@(CustomAppDataKey) : randomData3}];
-        [strongSelf.pebbleMessageUpdateQueue enqueue:@{@(CustomAppDataKey) : randomData4}];
-        [strongSelf.pebbleMessageUpdateQueue enqueue:@{@(CustomAppDataKey) : randomData5}];
-    });
-    
     // Push Update
     
     if (self.queuedPebbleMessageUpdate.count > 0 || self.shouldKillPebbleApp)
