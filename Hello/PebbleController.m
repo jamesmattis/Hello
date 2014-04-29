@@ -519,8 +519,11 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
 
 #pragma mark - ADD DICTIONARY TO QUEUE METHOD
 
--(void)addDictionaryToQueue:(NSDictionary *)dictionary
+-(BOOL)addDictionaryToQueue:(NSDictionary *)dictionary
 {
+    if ([self bytesForDictionary:dictionary] > 124)
+        return NO;
+    
     __weak __typeof__(self) weakSelf = self;
 
     // Update Queued Dictionary
@@ -540,7 +543,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         
         if (strongSelf.useMaxData)
         {
-            NSInteger dataLength = (123 - 7) - [strongSelf bytesForDictionary:strongSelf.queuedPebbleMessageUpdate];
+            NSInteger dataLength = (124 - 8) - [strongSelf bytesForDictionary:strongSelf.queuedPebbleMessageUpdate];
 
             (strongSelf.queuedPebbleMessageUpdate)[@(CustomAppDataKey)] = [NSMutableData dataWithLength:dataLength];
         }
@@ -573,6 +576,8 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             
             [strongSelf pushPebbleUpdate];
         });
+    
+    return YES;
 }
 
 #pragma mark - Pebble Push Update Method

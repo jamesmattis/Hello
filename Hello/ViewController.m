@@ -109,7 +109,9 @@
             
             // Add Queue Dictionary To Queue
 
-            [[PebbleController pebble] addDictionaryToQueue:dictionary];
+            if (![[PebbleController pebble] addDictionaryToQueue:dictionary])
+                NSLog(@"[[PebbleController pebble] addDictionaryToQueue FAILURE: %d", [[PebbleController pebble] bytesForDictionary:dictionary]);
+
         }
         
         // Start Loop again if running
@@ -164,7 +166,8 @@
             
             // Add Queue Dictionary To Queue
             
-            [[PebbleController pebble] addDictionaryToQueue:dictionary];
+            if (![[PebbleController pebble] addDictionaryToQueue:dictionary])
+                NSLog(@"[[PebbleController pebble] addDictionaryToQueue FAILURE: %d", [[PebbleController pebble] bytesForDictionary:dictionary]);
             
             __weak __typeof__(self) weakSelf = self;
 
@@ -216,7 +219,8 @@
         
         // Add Queue Dictionary To Queue
         
-        [[PebbleController pebble] addDictionaryToQueue:dictionary];
+        if (![[PebbleController pebble] addDictionaryToQueue:dictionary])
+            NSLog(@"[[PebbleController pebble] addDictionaryToQueue FAILURE: %d", [[PebbleController pebble] bytesForDictionary:dictionary]);
     }
 }
 

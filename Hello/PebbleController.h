@@ -117,7 +117,7 @@ enum PebbleData
 
 // Add Dictionary to Queue Method
 
--(void)addDictionaryToQueue:(NSDictionary *)dictionary;
+-(BOOL)addDictionaryToQueue:(NSDictionary *)dictionary;
 
 // Pebble Push Update Method
 
