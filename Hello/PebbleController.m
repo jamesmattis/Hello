@@ -359,10 +359,13 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         
         NSMutableString *appMessage = [[NSMutableString alloc] init];
         
-        for (NSString *key in [update allKeys])
-        {
-            [appMessage appendFormat:@"key: %@ value %@ ", key, update[key]];
-        }
+        [update enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop){
+            
+            if ([object isKindOfClass:[NSNumber class]])
+                [appMessage appendFormat:@"key: %@ class: %@ value: %d ", key, [object class], [object intValue]];
+            else
+                [appMessage appendFormat:@"key: %@ class: %@ value: %@ ", key, [object class], object];
+        }];
         
         NSLog(@"appMessageUpdateHandler %@", appMessage);
         

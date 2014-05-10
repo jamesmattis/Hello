@@ -12,8 +12,8 @@
 // For Max Rate Testing, RandomAverage = 0.05 & RandomRange = 0.00
 // For Real World Testing, RandomAverage = 0.9 & RandomRange = 0.2;
 
-#define RANDOM_AVERAGE 0.9
-#define RANDOM_RANGE 0.2
+#define RANDOM_AVERAGE 0.05
+#define RANDOM_RANGE 0.00
 
 // Color Defines
 
