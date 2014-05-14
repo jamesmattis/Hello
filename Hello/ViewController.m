@@ -91,6 +91,7 @@
                 labelString = @"kaixo";
                 break;
             default:
+                labelString = @"";
                 break;
         }
         
