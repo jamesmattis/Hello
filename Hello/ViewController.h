@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PebbleController.h"
+
+@protocol PebbleControllerDelegate;
 
 @interface ViewController : UIViewController <PebbleControllerDelegate>
 
