@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "PebbleController.h"
 #import <mach/mach.h>
 
 // For Max Rate Testing, RandomAverage = 0.05 & RandomRange = 0.00
