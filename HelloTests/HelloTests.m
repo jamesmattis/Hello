@@ -8,12 +8,10 @@
 
 #import <XCTest/XCTest.h>
 #import "ViewController.h"
-#import "PebbleController.h"
 
 @interface HelloTests : XCTestCase
 
 @property (nonatomic, strong) ViewController *viewController;
-@property (nonatomic, strong) PebbleController *pebbleController;
 
 @end
 
@@ -30,8 +28,6 @@
     self.viewController = [storyboard instantiateInitialViewController];
 
     [self.viewController loadView];
-
-    self.pebbleController = [PebbleController pebble];
 }
 
 - (void)tearDown
