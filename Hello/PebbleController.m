@@ -936,7 +936,8 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             {
                 NSLog(@"pebbleCentral watchDidConnect [self.watch isConnected] self.delegate.isRunning");
                 
-                [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
+                if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || [[PBPebbleCentral defaultCentral] hasValidAppUUID])
+                    [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
                 
                 self.pebbleAppUUIDSet = YES;
                 self.pebbleHardwareEnabled = YES;
