@@ -970,7 +970,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                     strongSelf.pebbleConnected = YES;
                 }];
 #else
-                if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || [[PBPebbleCentral defaultCentral] hasValidAppUUID])
+                if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || ![[PBPebbleCentral defaultCentral] hasValidAppUUID])
                     [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
                 
                 self.pebbleAppUUIDSet = YES;
