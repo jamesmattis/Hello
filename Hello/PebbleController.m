@@ -761,7 +761,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                              if ((!strongSelf.useQueue && strongSelf.queuedPebbleMessageUpdate.count > 0) || (strongSelf.useQueue && strongSelf.pebbleMessageUpdateQueue.count > 0) || strongSelf.shouldKillPebbleApp)
                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
                                      
-#if defined (CRASH_WATCH)
+#ifdef CRASH_WATCH
                                      strongSelf.isManuallyResettingPebble = YES;
                                      
                                      [strongSelf.watch closeSession:^{
@@ -769,6 +769,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                                          [strongSelf pushPebbleUpdate];
                                      }];
 #else
+
                                      [strongSelf pushPebbleUpdate];
 #endif
                                  });
@@ -947,7 +948,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             {
                 NSLog(@"pebbleCentral watchDidConnect [self.watch isConnected] self.delegate.isRunning");
                 
-#if defined (CRASH_WATCH)
+#ifdef CRASH_WATCH
 
                 [self.watch getVersionInfo:^(PBWatch *watch, PBVersionInfo *versionInfo){
                     __strong __typeof__(self) strongSelf = weakSelf;
