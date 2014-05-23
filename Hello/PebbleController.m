@@ -9,6 +9,8 @@
 #import <mach/mach.h>
 #import "PebbleController.h"
 
+#define CRASH_WATCH YES
+
 // Log All Pushes
 
 #define LOG_ALL_PUSHES NO
@@ -759,7 +761,16 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                              if ((!strongSelf.useQueue && strongSelf.queuedPebbleMessageUpdate.count > 0) || (strongSelf.useQueue && strongSelf.pebbleMessageUpdateQueue.count > 0) || strongSelf.shouldKillPebbleApp)
                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
                                      
+#if defined (CRASH_WATCH)
+                                     strongSelf.isManuallyResettingPebble = YES;
+                                     
+                                     [strongSelf.watch closeSession:^{
+                                         
+                                         [strongSelf pushPebbleUpdate];
+                                     }];
+#else
                                      [strongSelf pushPebbleUpdate];
+#endif
                                  });
                          }
                      }];
@@ -921,7 +932,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     NSLog(@"pebbleCentral watchDidConnect appUUID == appUUID %@", (([PBPebbleCentral defaultCentral].appUUID == self.appUUID)? @"Yes" : @"No"));
     
     self.watch = watch;
-    
+        
     if (self.watch)
     {
         [self.watch setDelegate:self];
@@ -936,12 +947,35 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             {
                 NSLog(@"pebbleCentral watchDidConnect [self.watch isConnected] self.delegate.isRunning");
                 
+#if defined (CRASH_WATCH)
+
+                [self.watch getVersionInfo:^(PBWatch *watch, PBVersionInfo *versionInfo){
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    [[PBPebbleCentral defaultCentral] setAppUUID:strongSelf.appUUID];
+                    
+                    strongSelf.pebbleAppUUIDSet = YES;
+                    strongSelf.pebbleHardwareEnabled = YES;
+                    strongSelf.pebbleConnected = YES;
+                    
+                } onTimeout:^(PBWatch *watch){
+                    
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    [[PBPebbleCentral defaultCentral] setAppUUID:strongSelf.appUUID];
+                    
+                    strongSelf.pebbleAppUUIDSet = YES;
+                    strongSelf.pebbleHardwareEnabled = YES;
+                    strongSelf.pebbleConnected = YES;
+                }];
+#else
                 if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || [[PBPebbleCentral defaultCentral] hasValidAppUUID])
                     [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
                 
                 self.pebbleAppUUIDSet = YES;
                 self.pebbleHardwareEnabled = YES;
                 self.pebbleConnected = YES;
+#endif
             }
             else
             {
