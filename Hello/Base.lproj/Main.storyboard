@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -189,7 +189,7 @@
                         <outlet property="danishButton" destination="v0h-lU-zPf" id="uGa-R6-4Pq"/>
                         <outlet property="dutchButton" destination="6Wn-q5-2kG" id="iJM-fr-odH"/>
                         <outlet property="englishButton" destination="vgZ-6L-qe6" id="mg5-qt-LPx"/>
-                        <outlet property="frenchButton" destination="RdH-Pt-2NX" id="qVS-Vb-KK6"/>
+                        <outlet property="frenchButton" destination="RdH-Pt-2NX" id="Pbx-Ew-8Cw"/>
                         <outlet property="italianButton" destination="U4q-KM-vVe" id="Dru-wh-JJm"/>
                         <outlet property="latinButton" destination="SjI-5G-YfZ" id="guy-bZ-dqv"/>
                         <outlet property="maxDataSwitch" destination="pzg-1X-FOW" id="eP9-jP-2yA"/>

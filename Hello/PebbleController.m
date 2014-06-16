@@ -9,8 +9,6 @@
 #import <mach/mach.h>
 #import "PebbleController.h"
 
-#define CRASH_WATCH YES
-
 // Log All Pushes
 
 #define LOG_ALL_PUSHES NO
@@ -947,36 +945,13 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
             if ([self.delegate getIsRunningStatus])
             {
                 NSLog(@"pebbleCentral watchDidConnect [self.watch isConnected] self.delegate.isRunning");
-                
-#ifdef CRASH_WATCH
 
-                [self.watch getVersionInfo:^(PBWatch *watch, PBVersionInfo *versionInfo){
-                    __strong __typeof__(self) strongSelf = weakSelf;
-                    
-                    [[PBPebbleCentral defaultCentral] setAppUUID:strongSelf.appUUID];
-                    
-                    strongSelf.pebbleAppUUIDSet = YES;
-                    strongSelf.pebbleHardwareEnabled = YES;
-                    strongSelf.pebbleConnected = YES;
-                    
-                } onTimeout:^(PBWatch *watch){
-                    
-                    __strong __typeof__(self) strongSelf = weakSelf;
-                    
-                    [[PBPebbleCentral defaultCentral] setAppUUID:strongSelf.appUUID];
-                    
-                    strongSelf.pebbleAppUUIDSet = YES;
-                    strongSelf.pebbleHardwareEnabled = YES;
-                    strongSelf.pebbleConnected = YES;
-                }];
-#else
                 if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || ![[PBPebbleCentral defaultCentral] hasValidAppUUID])
                     [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
                 
                 self.pebbleAppUUIDSet = YES;
                 self.pebbleHardwareEnabled = YES;
                 self.pebbleConnected = YES;
-#endif
             }
             else
             {
