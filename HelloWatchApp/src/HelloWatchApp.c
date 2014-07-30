@@ -434,27 +434,6 @@ static void in_received_handler(DictionaryIterator *received, void *context)
 {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler received.size: %ld", dict_size(received));
     
-    Tuple *tuple = dict_read_first(received);
-    
-    while (tuple)
-    {
-        switch (tuple->key) {
-            case MESSAGE_KEY:
-                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: DISTANCE_KEY");
-                break;
-            case DATA_KEY:
-                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: DATA_KEY");
-                break;
-            case SNIFF_KEY:
-                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: SNIFF_KEY");
-                break;
-            default:
-                break;
-        }
-        
-        tuple = dict_read_next(received);
-    }
-    
     // Log Time & Elapsed Time
     
     time_t now = time(NULL);
@@ -471,8 +450,109 @@ static void in_received_handler(DictionaryIterator *received, void *context)
     
     receivedMessagesCounter++;
     
-    // Handle Tuples
+    Tuple *tuple = dict_read_first(received);
     
+    while (tuple)
+    {
+        switch (tuple->key) {
+            case MESSAGE_KEY:
+                if (strcmp (text_layer_buffer, tuple->value->cstring) != 0)
+                {
+                    strcpy	(text_layer_buffer, tuple->value->cstring);
+                    text_layer_set_text(text_layer, text_layer_buffer);
+                }
+                if (strcmp (text_layer_buffer, "hello") == 0)
+                    textCounter = 0;
+                if (strcmp (text_layer_buffer, "hallo") == 0)
+                    textCounter = 1;
+                if (strcmp (text_layer_buffer, "hola") == 0)
+                    textCounter = 2;
+                if (strcmp (text_layer_buffer, "hej") == 0)
+                    textCounter = 3;
+                if (strcmp (text_layer_buffer, "bonjour") == 0)
+                    textCounter = 4;
+                if (strcmp (text_layer_buffer, "ciao") == 0)
+                    textCounter = 5;
+                if (strcmp (text_layer_buffer, "salve") == 0)
+                    textCounter = 6;
+                if (strcmp (text_layer_buffer, "ola") == 0)
+                    textCounter = 7;
+                if (strcmp (text_layer_buffer, "chaoa") == 0)
+                    textCounter = 8;
+                if (strcmp (text_layer_buffer, "kaixo") == 0)
+                    textCounter = 9;
+                if (receivedMessagesCounter % 10000 == 0)
+                    APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld message: %s", error_time_text, elapsedTime, tuple->value->cstring);
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: MESSAGE_KEY");
+                break;
+            case DATA_KEY:
+                if (data_buffer != NULL)
+                    free(data_buffer);
+                data_buffer = malloc(tuple->length);
+                memcpy(data_buffer, tuple->value->data, tuple->length);
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: DATA_KEY");
+                break;
+            case SNIFF_KEY:
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "[%s] App Message in_received_handler ELAPSED TIME: %ld SNIFF_KEY RECEIVED", error_time_text, elapsedTime);
+                if (tuple->value->uint8)
+                {
+                    // Set Reduced Sniff Interval for Faster Response Time
+                    
+                    app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+                    
+                    char message_text[] = "Set SNIFF_INTERVAL_REDUCED";
+                    
+                    // Send App Message Out
+                    
+                    DictionaryIterator *iterator;
+                    
+                    if (app_message_outbox_begin(&iterator) != APP_MSG_OK)
+                    {
+                        return;
+                    }
+                    
+                    if (dict_write_cstring(iterator, MESSAGE_KEY, message_text) != DICT_OK)
+                    {
+                        return;
+                    }
+                    
+                    app_message_outbox_send();
+                }
+                else
+                {
+                    // Set Normal Sniff Interval
+                    
+                    app_comm_set_sniff_interval(SNIFF_INTERVAL_NORMAL);
+                    
+                    char message_text[] = "Set SNIFF_INTERVAL_NORMAL";
+                    
+                    // Send App Message Out
+                    
+                    DictionaryIterator *iterator;
+                    
+                    if (app_message_outbox_begin(&iterator) != APP_MSG_OK)
+                    {
+                        return;
+                    }
+                    
+                    if (dict_write_cstring(iterator, MESSAGE_KEY, message_text) != DICT_OK)
+                    {
+                        return;
+                    }
+                    
+                    app_message_outbox_send();
+                }
+                APP_LOG(APP_LOG_LEVEL_DEBUG, "  in_received_handler tuple->key: SNIFF_KEY");
+                break;
+            default:
+                break;
+        }
+        
+        tuple = dict_read_next(received);
+    }
+    
+    // Handle Tuples
+    /*
     Tuple *message_tuple = dict_find(received, MESSAGE_KEY);
     Tuple *data_tuple = dict_find(received, DATA_KEY);
     Tuple *sniff_tuple = dict_find(received, SNIFF_KEY);
@@ -485,24 +565,17 @@ static void in_received_handler(DictionaryIterator *received, void *context)
         
         // This code can produce unexpected results:
         
-        /*
+     ////
         if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
         {
             strcpy	(text_layer_buffer, message_tuple->value->cstring);
             
             text_layer_set_text(text_layer, message_tuple->value->cstring);
         }
-        */
-        
-        if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
-        {
-            strcpy	(text_layer_buffer, message_tuple->value->cstring);
-            
-            text_layer_set_text(text_layer, message_tuple->value->cstring);
-        }
-        
+     ////
+     
         // This code works as expected:
-        
+    
         if (strcmp (text_layer_buffer, message_tuple->value->cstring) != 0)
         {
             strcpy	(text_layer_buffer, message_tuple->value->cstring);
@@ -624,6 +697,7 @@ static void in_received_handler(DictionaryIterator *received, void *context)
             app_message_outbox_send();
         }
     }
+    */
 }
 
 static void in_dropped_handler(AppMessageResult reason, void *context)
