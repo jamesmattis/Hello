@@ -78,7 +78,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         self.shouldClosePebbleSession = NO;
         self.pebbleSessionOpen = NO;
         self.pebbleConnected = NO;
-        self.isReconnecting = NO;
         self.isManuallyResettingPebble = NO;
         
         // Error Count
@@ -109,7 +108,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         
         self.pebbleMessageUpdateQueue = [[NSMutableArray alloc] init];
         
-        self.appLifecycleHandle = nil;
         self.appUpdateHandle = nil;
     }
     
@@ -372,28 +370,6 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         return YES;
         
     } withUUID:self.appUUID];
-    
-    self.appLifecycleHandle = [self.watch appMessagesAddAppLifecycleUpdateHandler:^(PBWatch *watch , NSUUID *uuid , PBAppState newAppState){
-        
-        __strong __typeof__(self) strongSelf = weakSelf;
-        
-        [strongSelf.delegate appLifecycleUpdateReceived:newAppState];
-        
-        NSLog(@"appMessageLifecycleHandler");
-        
-        if (newAppState == PBAppStateNotRunning)
-        {
-            NSLog(@"appMessageLifecycleHandler PBAppStateNotRunning");
-            
-            [strongSelf connectPebbleDisplay];
-        }
-        else
-        {
-            NSLog(@"appMessageLifecycleHandler PBAppStateRunning");
-            
-            [strongSelf.delegate pebbleLaunchSuccess];
-        }
-    }];
 }
 
 #pragma mark - Connect Pebble Display Method
@@ -441,7 +417,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                       {
                           if (!error)
                           {
-                              dispatch_barrier_sync(strongSelf->queue, ^{
+                              dispatch_barrier_async(strongSelf->queue, ^{
                                   strongSelf.pebbleConnected = YES;
                                   strongSelf.isSendingPebbleUpdate = NO;
                               });
@@ -454,7 +430,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                           {
                               // Do Nothing Once New SDK Released
                               
-                              dispatch_barrier_sync(strongSelf->queue, ^{
+                              dispatch_barrier_async(strongSelf->queue, ^{
                                   strongSelf.pebbleConnected = YES;
                                   strongSelf.isSendingPebbleUpdate = NO;
                               });
@@ -480,7 +456,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                       {
                           if (!error)
                           {
-                              dispatch_barrier_sync(strongSelf->queue, ^{
+                              dispatch_barrier_async(strongSelf->queue, ^{
                                   strongSelf.pebbleConnected = YES;
                                   strongSelf.isSendingPebbleUpdate = NO;
                               });
@@ -493,7 +469,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                           {
                               // Do Nothing Once New SDK Released
                               
-                              dispatch_barrier_sync(strongSelf->queue, ^{
+                              dispatch_barrier_async(strongSelf->queue, ^{
                                   strongSelf.pebbleConnected = YES;
                                   strongSelf.isSendingPebbleUpdate = NO;
                               });
@@ -531,7 +507,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
 
     // Update Queued Dictionary
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         if ((strongSelf.queuedPebbleMessageUpdate)[@(CustomAppDataKey)])
@@ -565,7 +541,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         updateDictionary = [[NSDictionary alloc] initWithDictionary:strongSelf.queuedPebbleMessageUpdate];
     });
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         [strongSelf.pebbleMessageUpdateQueue enqueue:updateDictionary];
@@ -573,7 +549,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     // Push Update
     
-    if (self.queuedPebbleMessageUpdate.count > 0 || self.shouldKillPebbleApp)
+    if ([self shouldPushPebbleUpdate])
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             __strong __typeof__(self) strongSelf = weakSelf;
             
@@ -581,6 +557,25 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         });
     
     return YES;
+}
+
+#pragma mark - Should Push Pebble Update
+
+-(BOOL)shouldPushPebbleUpdate
+{
+    __block BOOL shouldPushUpdate = NO;
+    
+    __weak __typeof(self) weakSelf = self;
+    
+    dispatch_sync(self->queue, ^{
+        __strong __typeof(self) strongSelf = weakSelf;
+        
+        shouldPushUpdate = ((strongSelf.queuedPebbleMessageUpdate.count > 0 && !strongSelf.useQueue)
+                            || (strongSelf.pebbleMessageUpdateQueue.count > 0 && strongSelf.useQueue)
+                            || strongSelf.shouldKillPebbleApp);
+    });
+    
+    return shouldPushUpdate;
 }
 
 #pragma mark - Pebble Push Update Method
@@ -592,23 +587,23 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     self.pushes++;
     
-    // For Max Rate Testing, Update Stats Every 10000 pushes
+    // For Max Rate Testing, Update Stats Every 1000 pushes
     
-    if (fmodf(((float) self.pushes), 10000.0) == 0.0)
+    if (fmodf(((float) self.pushes), 1000.0) == 0.0)
     {
         [self logStats];
     }
     
     if (self.useCustomPebbleApp)
     {
-        __block BOOL shouldPushUpdate = NO;
+        __block BOOL canPushUpdate = NO;
         
         __weak __typeof__(self) weakSelf = self;
         
         dispatch_sync(queue, ^{
             __strong __typeof__(self) strongSelf = weakSelf;
             
-            shouldPushUpdate = (!strongSelf.isSendingPebbleUpdate
+            canPushUpdate = (!strongSelf.isSendingPebbleUpdate
                                 && !strongSelf.isResettingPebble
                                 && (strongSelf.pebbleSessionOpen || strongSelf.isManuallyResettingPebble)
                                 && strongSelf.pebbleConnected
@@ -616,164 +611,172 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                                 && strongSelf.pebbleHardwareEnabled);
         });
         
-        if (shouldPushUpdate)
+        if (canPushUpdate)
         {
-            if (!self.shouldKillPebbleApp)
+            __block BOOL shouldKillApp = NO;
+            
+            dispatch_sync(queue, ^{
+                __strong __typeof__(self) strongSelf = weakSelf;
+                
+                shouldKillApp = strongSelf.shouldKillPebbleApp;
+            });
+            
+            if (!shouldKillApp)
             {
-                if ((self.queuedPebbleMessageUpdate.count > 0 && !self.useQueue) || (self.pebbleMessageUpdateQueue.count > 0 && self.useQueue))
+                dispatch_barrier_async(queue, ^{
+                    __strong __typeof__(self) strongSelf = weakSelf;
+                    
+                    strongSelf.isSendingPebbleUpdate = YES;
+                });
+                
+                __block NSDictionary *updateDictionary;
+                
+                if (self.useQueue)
                 {
-                    dispatch_barrier_sync(queue, ^{
+                    dispatch_sync(queue, ^{
                         __strong __typeof__(self) strongSelf = weakSelf;
                         
-                        strongSelf.isSendingPebbleUpdate = YES;
+                        updateDictionary = [NSDictionary dictionaryWithDictionary:(NSDictionary *)[strongSelf.pebbleMessageUpdateQueue headOfQueue]];
                     });
-                    
-                    __block NSDictionary *updateDictionary;
-                    
-                    if (self.useQueue)
-                    {
-                        dispatch_sync(queue, ^{
-                            __strong __typeof__(self) strongSelf = weakSelf;
-                            
-                            updateDictionary = [NSDictionary dictionaryWithDictionary:(NSDictionary *)[strongSelf.pebbleMessageUpdateQueue headOfQueue]];
-                        });
-                    }
-                    else
-                    {
-                        dispatch_sync(queue, ^{
-                            __strong __typeof__(self) strongSelf = weakSelf;
-                            
-                            updateDictionary = [NSDictionary dictionaryWithDictionary:strongSelf.queuedPebbleMessageUpdate];
-                        });
-                    }
-                    
-                    if (LOG_ALL_PUSHES)
-                        NSLog(@"pushPebbleUpdate labelString: %@", updateDictionary[@(CustomAppMessageKey)]);
-                    
-                    if (self.errorCount > 0)
-                        NSLog(@"self.watch appMessagesPushUpdate error.count %ld", (long)self.errorCount);
-                    
-                    [self.watch appMessagesPushUpdate:updateDictionary withUUID:self.appUUID onSent:^(PBWatch *watch, NSDictionary *update, NSError *error)
+                }
+                else
+                {
+                    dispatch_sync(queue, ^{
+                        __strong __typeof__(self) strongSelf = weakSelf;
+                        
+                        updateDictionary = [NSDictionary dictionaryWithDictionary:strongSelf.queuedPebbleMessageUpdate];
+                    });
+                }
+                
+                if (LOG_ALL_PUSHES)
+                    NSLog(@"pushPebbleUpdate labelString: %@", updateDictionary[@(CustomAppMessageKey)]);
+                
+                if (self.errorCount > 0)
+                    NSLog(@"self.watch appMessagesPushUpdate error.count %ld", (long)self.errorCount);
+                
+                [self.watch appMessagesPushUpdate:updateDictionary withUUID:self.appUUID onSent:^(PBWatch *watch, NSDictionary *update, NSError *error)
+                 {
+                     __strong __typeof__(self) strongSelf = weakSelf;
+                     
+                     [strongSelf.delegate appMessagePushCallBackReceived:error];
+                     
+                     if (error)
                      {
-                         __strong __typeof__(self) strongSelf = weakSelf;
+                         strongSelf.totalErrors++;
                          
-                         [strongSelf.delegate appMessagePushCallBackReceived:error];
+                         strongSelf.pushFails++;
+                         strongSelf.failedBytes += [strongSelf bytesForDictionary:update];
                          
-                         if (error)
+                         NSLog(@"pushPebbleUpdate appMessagesPushUpdate errorCount: %ld error: %@", (long)strongSelf.errorCount, error.debugDescription);
+                         
+                         if (strongSelf.errorCount == 0)
+                             strongSelf.timeoutCycles++;
+                         
+                         strongSelf.errorCount++;
+                         
+                         if (error.code == 10)
                          {
-                             strongSelf.totalErrors++;
+                             strongSelf.timeoutErrors++;
                              
-                             strongSelf.pushFails++;
-                             strongSelf.failedBytes += [strongSelf bytesForDictionary:update];
-                             
-                             NSLog(@"pushPebbleUpdate appMessagesPushUpdate errorCount: %ld error: %@", (long)strongSelf.errorCount, error.debugDescription);
-                             
-                             if (strongSelf.errorCount == 0)
-                                 strongSelf.timeoutCycles++;
-                             
-                             strongSelf.errorCount++;
-                             
-                             if (error.code == 10)
-                             {
-                                 strongSelf.timeoutErrors++;
+                             dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                 NSLog(@"pushPebbleUpdate appMessagesPushUpdate error dispatch code 10");
                                  
-                                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                     NSLog(@"pushPebbleUpdate appMessagesPushUpdate error dispatch code 10");
-                                     
-                                     dispatch_barrier_sync(strongSelf->queue, ^{
-                                         strongSelf.isSendingPebbleUpdate = NO;
-                                     });
-                                     
-                                     if (!strongSelf.isResettingPebble)
-                                         dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                             strongSelf.isManuallyResettingPebble = YES;
-                                             
-                                             [strongSelf.watch closeSession:^{
-                                                 
-                                                 [strongSelf pushPebbleUpdate];
-                                             }];
-                                         });
+                                 dispatch_barrier_async(strongSelf->queue, ^{
+                                     strongSelf.isSendingPebbleUpdate = NO;
                                  });
-                             }
-                             else if (error.code == 9)
-                             {
-                                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                     NSLog(@"pushPebbleUpdate appMessagesPushUpdate error dispatch code 9");
-                                     
-                                     dispatch_barrier_sync(strongSelf->queue, ^{
-                                         strongSelf.isSendingPebbleUpdate = NO;
-                                     });
-                                     
-                                     if (!weakSelf.isResettingPebble)
-                                         dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                             strongSelf.isManuallyResettingPebble = YES;
-                                             
-                                             [strongSelf.watch closeSession:^{
-                                                 
-                                                 [strongSelf pushPebbleUpdate];
-                                             }];
-                                         });
-                                 });
-                             }
-                             else
-                             {
-                                 NSLog(@"pushPebbleUpdate appMessagesPushUpdate error code %ld", (long)error.code);
                                  
-                                 dispatch_barrier_sync(strongSelf->queue, ^{
+                                 if (!strongSelf.isResettingPebble)
+                                     dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                         strongSelf.isManuallyResettingPebble = YES;
+                                         
+                                         [strongSelf.watch closeSession:^{
+                                             
+                                             if ([strongSelf shouldPushPebbleUpdate])
+                                                 [strongSelf pushPebbleUpdate];
+                                         }];
+                                     });
+                             });
+                         }
+                         else if (error.code == 9)
+                         {
+                             dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                 NSLog(@"pushPebbleUpdate appMessagesPushUpdate error dispatch code 9");
+                                 
+                                 dispatch_barrier_async(strongSelf->queue, ^{
                                      strongSelf.isSendingPebbleUpdate = NO;
                                  });
                                  
                                  if (!weakSelf.isResettingPebble)
                                      dispatch_async(dispatch_get_main_queue(), ^(void) {
-
                                          strongSelf.isManuallyResettingPebble = YES;
                                          
                                          [strongSelf.watch closeSession:^{
                                              
-                                             [strongSelf pushPebbleUpdate];
+                                             if ([strongSelf shouldPushPebbleUpdate])
+                                                 [strongSelf pushPebbleUpdate];
                                          }];
-                                         
                                      });
-                             }
+                             });
                          }
                          else
                          {
-                             dispatch_barrier_async(queue, ^{
-                                 __strong __typeof__(self) strongSelf = weakSelf;
-                                 
-                                 [strongSelf.queuedPebbleMessageUpdate removeAllObjects];
-                                 [strongSelf.pebbleMessageUpdateQueue dequeue];
-                             });
+                             NSLog(@"pushPebbleUpdate appMessagesPushUpdate error code %ld", (long)error.code);
                              
-                             strongSelf.successfulPushes++;
-                             strongSelf.pushedBytes += [strongSelf bytesForDictionary:update];
-                             
-                             if (strongSelf.errorCount > 0)
-                                 strongSelf.errorRecoveries++;
-                             
-                             dispatch_barrier_sync(strongSelf->queue, ^{
+                             dispatch_barrier_async(strongSelf->queue, ^{
                                  strongSelf.isSendingPebbleUpdate = NO;
-                                 strongSelf.errorCount = 0;
                              });
                              
-                             if ((!strongSelf.useQueue && strongSelf.queuedPebbleMessageUpdate.count > 0) || (strongSelf.useQueue && strongSelf.pebbleMessageUpdateQueue.count > 0) || strongSelf.shouldKillPebbleApp)
+                             if (!weakSelf.isResettingPebble)
                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
                                      
-#ifdef CRASH_WATCH
                                      strongSelf.isManuallyResettingPebble = YES;
                                      
                                      [strongSelf.watch closeSession:^{
                                          
-                                         [strongSelf pushPebbleUpdate];
+                                         if ([strongSelf shouldPushPebbleUpdate])
+                                             [strongSelf pushPebbleUpdate];
                                      }];
-#else
-
-                                     [strongSelf pushPebbleUpdate];
-#endif
+                                     
                                  });
                          }
-                     }];
-                }
+                     }
+                     else
+                     {
+                         dispatch_barrier_async(queue, ^{
+                             __strong __typeof__(self) strongSelf = weakSelf;
+                             
+                             [strongSelf.queuedPebbleMessageUpdate removeAllObjects];
+                             [strongSelf.pebbleMessageUpdateQueue dequeue];
+                         });
+                         
+                         strongSelf.successfulPushes++;
+                         strongSelf.pushedBytes += [strongSelf bytesForDictionary:update];
+                         
+                         if (strongSelf.errorCount > 0)
+                             strongSelf.errorRecoveries++;
+                         
+                         dispatch_barrier_async(strongSelf->queue, ^{
+                             strongSelf.isSendingPebbleUpdate = NO;
+                             strongSelf.errorCount = 0;
+                         });
+                         
+                         if ([strongSelf shouldPushPebbleUpdate])
+                             dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                 
+#ifdef CRASH_WATCH
+                                 strongSelf.isManuallyResettingPebble = YES;
+                                 
+                                 [strongSelf.watch closeSession:^{
+                                     
+                                     [strongSelf pushPebbleUpdate];
+                                 }];
+#else
+                                 
+                                 [strongSelf pushPebbleUpdate];
+#endif
+                             });
+                     }
+                 }];
             }
             else
             {
@@ -829,7 +832,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
 {
     __weak __typeof__(self) weakSelf = self;
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         strongSelf.isSendingPebbleUpdate = YES;
@@ -853,12 +856,11 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
              {
                  NSLog(@"killPebbleApp appMessagesKill OK");
                  
-                 dispatch_barrier_sync(strongSelf->queue, ^{
+                 dispatch_barrier_async(strongSelf->queue, ^{
                      strongSelf.pebbleConnected = NO;
                      strongSelf.isSendingPebbleUpdate = NO;
+                     strongSelf.shouldKillPebbleApp = NO;
                  });
-                 
-                 strongSelf.shouldKillPebbleApp = NO;
                  
                  if (strongSelf.shouldClosePebbleSession)
                  {
@@ -872,6 +874,10 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
              else
              {
                  // Do Nothing
+                 
+                 dispatch_barrier_async(strongSelf->queue, ^{
+                     strongSelf.isSendingPebbleUpdate = NO;
+                 });
                  
                  NSLog(@"killPebbleApp appMessagesKill Error: %@", error.debugDescription);
              }
@@ -947,7 +953,9 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
                 NSLog(@"pebbleCentral watchDidConnect [self.watch isConnected] self.delegate.isRunning");
 
                 if ([PBPebbleCentral defaultCentral].appUUID != self.appUUID || ![[PBPebbleCentral defaultCentral] hasValidAppUUID])
+                {
                     [[PBPebbleCentral defaultCentral] setAppUUID:self.appUUID];
+                }
                 
                 self.pebbleAppUUIDSet = YES;
                 self.pebbleHardwareEnabled = YES;
@@ -1035,7 +1043,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     __weak __typeof__(self) weakSelf = self;
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         strongSelf.pebbleSessionOpen = NO;
@@ -1055,7 +1063,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     __weak __typeof__(self) weakSelf = self;
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         if (strongSelf.errorCount > 0)
@@ -1064,11 +1072,11 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
         strongSelf.isManuallyResettingPebble = NO;
         strongSelf.pebbleSessionOpen = YES;
         strongSelf.isResettingPebble = NO;
-        strongSelf.isReconnecting = NO;
+        
         strongSelf.errorCount = 0;
     });
     
-    if (self.queuedPebbleMessageUpdate.count > 0 || self.shouldKillPebbleApp)
+    if ([self shouldPushPebbleUpdate])
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             __strong __typeof__(self) strongSelf = weakSelf;
             
@@ -1082,7 +1090,7 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     __weak __typeof__(self) weakSelf = self;
     
-    dispatch_barrier_sync(queue, ^{
+    dispatch_barrier_async(queue, ^{
         __strong __typeof__(self) strongSelf = weakSelf;
         
         strongSelf.isResettingPebble = YES;

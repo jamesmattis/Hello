@@ -49,10 +49,6 @@ enum PebbleData
 
 @property (nonatomic, assign) id appUpdateHandle;
 
-// Pebble Watch App Lifecycle Handle
-
-@property (nonatomic, assign) id appLifecycleHandle;
-
 // Control Bools
 
 @property (assign, nonatomic) BOOL useQueue;
@@ -71,7 +67,6 @@ enum PebbleData
 @property (assign, nonatomic) BOOL shouldClosePebbleSession;
 @property (assign, nonatomic) BOOL pebbleSessionOpen;
 @property (assign, nonatomic) BOOL pebbleConnected;
-@property (assign, nonatomic) BOOL isReconnecting;
 
 // Error Count
 
@@ -118,6 +113,10 @@ enum PebbleData
 // Add Dictionary to Queue Method
 
 -(BOOL)addDictionaryToQueue:(NSDictionary *)dictionary;
+
+// Sould Push Pebble Update Method
+
+-(BOOL)shouldPushPebbleUpdate;
 
 // Pebble Push Update Method
 
