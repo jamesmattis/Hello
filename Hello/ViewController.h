@@ -56,10 +56,10 @@
 
 // Application Notifications
 
--(void)applicationDidBecomeActive:(NSNotification *)notification;
--(void)applicationWillResignActive:(NSNotification *)notification;
--(void)applicationDidEnterBackground:(NSNotification *)notification;
--(void)applicationWillEnterForeground:(NSNotification *)notification;
--(void)applicationWillTerminate:(NSNotification *)notification;
+-(void)applicationDidBecomeActive:(UIApplication *)application;
+-(void)applicationWillResignActive:(UIApplication *)application;
+-(void)applicationDidEnterBackground:(UIApplication *)application;
+-(void)applicationWillEnterForeground:(UIApplication *)application;
+-(void)applicationWillTerminate:(UIApplication *)application;
 
 @end

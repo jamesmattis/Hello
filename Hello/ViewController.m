@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import <mach/mach.h>
 
-// For Max Rate Testing, RandomAverage = 0.05 & RandomRange = 0.00
+// For Max Rate Testing, RandomAverage = 0.075 & RandomRange = 0.00
 // For Real World Testing, RandomAverage = 0.9 & RandomRange = 0.2;
 
 #define RANDOM_AVERAGE 0.05
@@ -227,17 +227,19 @@
 
 #pragma mark - Application Notifications
 
--(void)applicationDidBecomeActive:(NSNotification *)notification
+-(void)applicationDidBecomeActive:(UIApplication *)application
+{
+    // Relaunch Pebble App
+    
+    [[PebbleController pebble] enablePebbleHardware];
+}
+
+-(void)applicationWillResignActive:(UIApplication *)application
 {
     // Do Nothing
 }
 
--(void)applicationWillResignActive:(NSNotification *)notification
-{
-    // Do Nothing
-}
-
--(void)applicationDidEnterBackground:(NSNotification *)notification
+-(void)applicationDidEnterBackground:(UIApplication *)application
 {
     // If not running, kill pebble app.
     
@@ -245,12 +247,12 @@
         [[PebbleController pebble] killPebbleApp];
 }
 
--(void)applicationWillEnterForeground:(NSNotification *)notification
+-(void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Relaunch Pebble App
+    [[PebbleController pebble] enablePebbleHardware];
 }
 
--(void)applicationWillTerminate:(NSNotification *)notification
+-(void)applicationWillTerminate:(UIApplication *)application
 {
     // Remove appMessageUpdateHanlder
     
@@ -269,24 +271,11 @@
     // Start PebbleController
     
     [[PebbleController pebble] setDelegate:self];
-    [[PebbleController pebble] enablePebbleHardware];
-    
-    // Register for Notifications
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
     
     // Switch Setup
     
     [self.maxDataSwitch setOn:YES];
-    [self.queueSwitch setOn:YES];
+    [self.queueSwitch setOn:NO];
     [self.reducedSniffSwitch setOn:NO];
     
     // Language Button Outlets - Set Buttons to Inactive

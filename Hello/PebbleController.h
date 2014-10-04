@@ -86,6 +86,7 @@ enum PebbleData
 @property (nonatomic, assign) NSInteger pushedBytes;
 @property (nonatomic, assign) NSInteger blockedBytes;
 @property (nonatomic, assign) NSInteger failedBytes;
+@property (nonatomic, assign) NSInteger disconnectConnectCycles;
 @property (nonatomic, assign) double runTime;
 
 #pragma mark - Methods

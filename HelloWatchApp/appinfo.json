@@ -4,7 +4,7 @@
   "longName": "hello",
   "companyName": "World Champ Tech",
   "versionCode": 1,
-  "versionLabel": "1.0.0",
+  "versionLabel": "1.1",
   "watchapp": {
     "watchface": false
   },
