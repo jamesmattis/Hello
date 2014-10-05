@@ -126,7 +126,7 @@ dispatch_barrier_sync(queue, ^{
 [[PebbleController pebble] enablePebbleHardware];
 ```
 
-Dictionaries to push via App Message can then be queue using:
+Dictionaries to push via App Message can then be queued using:
 
 ```Objective-C
 [[PebbleController pebble] addDictionaryToQueue:dictionary];

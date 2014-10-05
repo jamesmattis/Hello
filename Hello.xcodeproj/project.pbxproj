@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C01456621923F8E0000372A9 /* PebbleKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C064D988191DC2E200ABB2E0 /* PebbleKit.framework */; };
-		C01456631923F8EC000372A9 /* PebbleVendor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C064D986191DC2DC00ABB2E0 /* PebbleVendor.framework */; };
 		C01456641923F8F0000372A9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719518E2004600D43F66 /* libz.dylib */; };
 		C01456651923F8F3000372A9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719318E2004100D43F66 /* CFNetwork.framework */; };
 		C01456661923F8F6000372A9 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719118E2002200D43F66 /* ExternalAccessory.framework */; };
@@ -37,8 +35,8 @@
 		C018719418E2004100D43F66 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719318E2004100D43F66 /* CFNetwork.framework */; };
 		C018719618E2004600D43F66 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C018719518E2004600D43F66 /* libz.dylib */; };
 		C01871B318E2044E00D43F66 /* NSMutableArray+Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */; };
-		C064D987191DC2DC00ABB2E0 /* PebbleVendor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C064D986191DC2DC00ABB2E0 /* PebbleVendor.framework */; };
-		C064D989191DC2E200ABB2E0 /* PebbleKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C064D988191DC2E200ABB2E0 /* PebbleKit.framework */; };
+		C059F5E419E113F9008005EE /* PebbleVendor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C059F5E319E113F9008005EE /* PebbleVendor.framework */; };
+		C059F5E619E11401008005EE /* PebbleKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C059F5E519E11401008005EE /* PebbleKit.framework */; };
 		C0EA987918E20C9E00D1DE61 /* PebbleController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0EA987818E20C9E00D1DE61 /* PebbleController.m */; };
 /* End PBXBuildFile section */
 
@@ -80,8 +78,8 @@
 		C018719518E2004600D43F66 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+Queue.m"; sourceTree = "<group>"; };
 		C01871B118E2044E00D43F66 /* NSMutableArray+Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+Queue.h"; sourceTree = "<group>"; };
-		C064D986191DC2DC00ABB2E0 /* PebbleVendor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleVendor.framework; sourceTree = "<group>"; };
-		C064D988191DC2E200ABB2E0 /* PebbleKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleKit.framework; sourceTree = "<group>"; };
+		C059F5E319E113F9008005EE /* PebbleVendor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleVendor.framework; sourceTree = "<group>"; };
+		C059F5E519E11401008005EE /* PebbleKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleKit.framework; sourceTree = "<group>"; };
 		C0A6B25A19CE6FB400BB4227 /* Hello.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Hello.entitlements; sourceTree = "<group>"; };
 		C0EA986F18E2059D00D1DE61 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Images/Default.png; sourceTree = "<group>"; };
 		C0EA987018E2059D00D1DE61 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Images/Icon.png; sourceTree = "<group>"; };
@@ -103,11 +101,11 @@
 				C018719018E2001B00D43F66 /* MessageUI.framework in Frameworks */,
 				C018718E18E2001500D43F66 /* CoreMotion.framework in Frameworks */,
 				C018718C18E2001000D43F66 /* CoreBluetooth.framework in Frameworks */,
-				C064D987191DC2DC00ABB2E0 /* PebbleVendor.framework in Frameworks */,
+				C059F5E419E113F9008005EE /* PebbleVendor.framework in Frameworks */,
 				C018715918E1FF8900D43F66 /* CoreGraphics.framework in Frameworks */,
 				C018715B18E1FF8900D43F66 /* UIKit.framework in Frameworks */,
 				C018715718E1FF8900D43F66 /* Foundation.framework in Frameworks */,
-				C064D989191DC2E200ABB2E0 /* PebbleKit.framework in Frameworks */,
+				C059F5E619E11401008005EE /* PebbleKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,10 +116,8 @@
 				C014566A1923F904000372A9 /* CoreGraphics.framework in Frameworks */,
 				C01456691923F8FF000372A9 /* CoreBluetooth.framework in Frameworks */,
 				C018717618E1FF8900D43F66 /* XCTest.framework in Frameworks */,
-				C01456631923F8EC000372A9 /* PebbleVendor.framework in Frameworks */,
 				C01456651923F8F3000372A9 /* CFNetwork.framework in Frameworks */,
 				C01456681923F8FC000372A9 /* CoreMotion.framework in Frameworks */,
-				C01456621923F8E0000372A9 /* PebbleKit.framework in Frameworks */,
 				C018717818E1FF8900D43F66 /* UIKit.framework in Frameworks */,
 				C018717718E1FF8900D43F66 /* Foundation.framework in Frameworks */,
 				C01456661923F8F6000372A9 /* ExternalAccessory.framework in Frameworks */,
@@ -155,8 +151,8 @@
 		C018715518E1FF8900D43F66 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C064D988191DC2E200ABB2E0 /* PebbleKit.framework */,
-				C064D986191DC2DC00ABB2E0 /* PebbleVendor.framework */,
+				C059F5E519E11401008005EE /* PebbleKit.framework */,
+				C059F5E319E113F9008005EE /* PebbleVendor.framework */,
 				C018719518E2004600D43F66 /* libz.dylib */,
 				C018719318E2004100D43F66 /* CFNetwork.framework */,
 				C018719118E2002200D43F66 /* ExternalAccessory.framework */,
