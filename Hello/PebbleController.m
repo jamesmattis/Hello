@@ -13,6 +13,10 @@
 
 #define LOG_ALL_PUSHES NO
 
+// Log After N Messages
+
+#define LOG_AFTER_N_MESSAGES 1000
+
 #pragma mark - PEBBLE WATCH APP UUID
 
 // Hint: Copy this from appinfo.auto.c file in Watch App build folder after building watch app
@@ -594,9 +598,9 @@ uint8_t pebbleAppUUID[] = {0xA3, 0xE3, 0x3D, 0x68, 0xB3, 0x51, 0x41, 0x73, 0xAB,
     
     self.pushes++;
     
-    // For Max Rate Testing, Update Stats Every 10000 pushes
+    // For Max Rate Testing, Update Stats Every n pushes
     
-    if (fmodf(((float) self.pushes), 10000.0) == 0.0)
+    if (fmodf(((float) self.pushes), LOG_AFTER_N_MESSAGES) == 0.0)
     {
         [self logStats];
     }

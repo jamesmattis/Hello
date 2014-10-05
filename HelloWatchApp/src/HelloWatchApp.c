@@ -276,7 +276,7 @@ static void tick_timer_handler(struct tm *tick_time, TimeUnits units_changed)
     {
         pushedMessagesCounter++;
 
-        if (pushedMessagesCounter % 60 == 0)
+        if (pushedMessagesCounter % 59 == 0)
             APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message tick_timer_handler %ld", elapsedTime);
         
         // Send App Message Out
