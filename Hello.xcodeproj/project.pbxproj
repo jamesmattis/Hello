@@ -23,7 +23,6 @@
 		C018716A18E1FF8900D43F66 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C018716818E1FF8900D43F66 /* Main.storyboard */; };
 		C018716D18E1FF8900D43F66 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C018716C18E1FF8900D43F66 /* ViewController.m */; };
 		C018716F18E1FF8900D43F66 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C018716E18E1FF8900D43F66 /* Images.xcassets */; };
-		C018717618E1FF8900D43F66 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018717518E1FF8900D43F66 /* XCTest.framework */; };
 		C018717718E1FF8900D43F66 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018715618E1FF8900D43F66 /* Foundation.framework */; };
 		C018717818E1FF8900D43F66 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C018715A18E1FF8900D43F66 /* UIKit.framework */; };
 		C018718018E1FF8900D43F66 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C018717E18E1FF8900D43F66 /* InfoPlist.strings */; };
@@ -66,7 +65,6 @@
 		C018716C18E1FF8900D43F66 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C018716E18E1FF8900D43F66 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C018717418E1FF8900D43F66 /* HelloTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HelloTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C018717518E1FF8900D43F66 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C018717D18E1FF8900D43F66 /* HelloTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HelloTests-Info.plist"; sourceTree = "<group>"; };
 		C018717F18E1FF8900D43F66 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C018718118E1FF8900D43F66 /* HelloTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloTests.m; sourceTree = "<group>"; };
@@ -115,7 +113,6 @@
 			files = (
 				C014566A1923F904000372A9 /* CoreGraphics.framework in Frameworks */,
 				C01456691923F8FF000372A9 /* CoreBluetooth.framework in Frameworks */,
-				C018717618E1FF8900D43F66 /* XCTest.framework in Frameworks */,
 				C01456651923F8F3000372A9 /* CFNetwork.framework in Frameworks */,
 				C01456681923F8FC000372A9 /* CoreMotion.framework in Frameworks */,
 				C018717818E1FF8900D43F66 /* UIKit.framework in Frameworks */,
@@ -162,7 +159,6 @@
 				C018715618E1FF8900D43F66 /* Foundation.framework */,
 				C018715818E1FF8900D43F66 /* CoreGraphics.framework */,
 				C018715A18E1FF8900D43F66 /* UIKit.framework */,
-				C018717518E1FF8900D43F66 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
