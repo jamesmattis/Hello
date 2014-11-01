@@ -36,6 +36,7 @@
 		C01871B318E2044E00D43F66 /* NSMutableArray+Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = C01871B018E2044E00D43F66 /* NSMutableArray+Queue.m */; };
 		C059F5E419E113F9008005EE /* PebbleVendor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C059F5E319E113F9008005EE /* PebbleVendor.framework */; };
 		C059F5E619E11401008005EE /* PebbleKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C059F5E519E11401008005EE /* PebbleKit.framework */; };
+		C0D9D30F1A055C7B0000AED4 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = C0D9D30E1A055C7B0000AED4 /* LICENSE.md */; };
 		C0EA987918E20C9E00D1DE61 /* PebbleController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0EA987818E20C9E00D1DE61 /* PebbleController.m */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +80,9 @@
 		C059F5E319E113F9008005EE /* PebbleVendor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleVendor.framework; sourceTree = "<group>"; };
 		C059F5E519E11401008005EE /* PebbleKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PebbleKit.framework; sourceTree = "<group>"; };
 		C0A6B25A19CE6FB400BB4227 /* Hello.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Hello.entitlements; sourceTree = "<group>"; };
+		C0D9D30D1A055C5B0000AED4 /* Hello.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Hello.md; sourceTree = SOURCE_ROOT; };
+		C0D9D30E1A055C7B0000AED4 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = SOURCE_ROOT; };
+		C0D9D3101A055CA00000AED4 /* NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = NOTES.md; sourceTree = SOURCE_ROOT; };
 		C0EA986F18E2059D00D1DE61 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Images/Default.png; sourceTree = "<group>"; };
 		C0EA987018E2059D00D1DE61 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Images/Icon.png; sourceTree = "<group>"; };
 		C0EA987418E2078D00D1DE61 /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = appinfo.json; path = HelloWatchApp/appinfo.json; sourceTree = SOURCE_ROOT; };
@@ -186,6 +190,7 @@
 		C018715D18E1FF8900D43F66 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C0D9D30D1A055C5B0000AED4 /* Hello.md */,
 				C0EA987618E20B3500D1DE61 /* README.md */,
 				C0EA986F18E2059D00D1DE61 /* Default.png */,
 				C0EA987018E2059D00D1DE61 /* Icon.png */,
@@ -193,6 +198,8 @@
 				C018715F18E1FF8900D43F66 /* InfoPlist.strings */,
 				C018716218E1FF8900D43F66 /* main.m */,
 				C018716418E1FF8900D43F66 /* Hello-Prefix.pch */,
+				C0D9D30E1A055C7B0000AED4 /* LICENSE.md */,
+				C0D9D3101A055CA00000AED4 /* NOTES.md */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -333,6 +340,7 @@
 				C018716718E1FF8900D43F66 /* AppDelegate.m in Sources */,
 				C0EA987918E20C9E00D1DE61 /* PebbleController.m in Sources */,
 				C018716318E1FF8900D43F66 /* main.m in Sources */,
+				C0D9D30F1A055C7B0000AED4 /* LICENSE.md in Sources */,
 				C01871B318E2044E00D43F66 /* NSMutableArray+Queue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
